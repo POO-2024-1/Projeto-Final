@@ -24,15 +24,18 @@ const Product = () => {
     const getProduct = async () => {
       setLoading(true);
       setLoading2(true);
-      const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+  
+      // Fetch the product details from your local API
+      const response = await fetch(`http://localhost:8080/listarProdutoById/${id}`);
       const data = await response.json();
       setProduct(data);
       setLoading(false);
-      const response2 = await fetch(
-        `https://fakestoreapi.com/products/category/${data.category}`
-      );
+  
+      // Fetch similar products from your local API
+      const response2 = await fetch(`http://localhost:8080/listarProdutos`);
       const data2 = await response2.json();
-      setSimilarProducts(data2);
+      const filteredData = data2.filter(prod => prod.category === data.category && prod.id !== data.id);
+      setSimilarProducts(filteredData);
       setLoading2(false);
     };
     getProduct();

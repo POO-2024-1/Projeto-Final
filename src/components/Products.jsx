@@ -17,15 +17,25 @@ const Products = () => {
 
   const addProduct = (product) => {
     dispatch(addCart(product))
-  }
+  } 
 
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
-      const response = await fetch("https://fakestoreapi.com/products/");
-      if (componentMounted) {
-        setData(await response.clone().json());
-        setFilter(await response.json());
+      try {
+        const response = await fetch("http://localhost:8080/listarProdutos", {
+          mode: 'cors',
+          method: 'GET',
+          headers: {'Content-Type':'application/json'}});
+        if (componentMounted) {
+          const data = await response.json();
+          setData(data);
+          setFilter(data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
         setLoading(false);
       }
 
@@ -86,20 +96,20 @@ const Products = () => {
               <div className="card text-center h-100" key={product.id}>
                 <img
                   className="card-img-top p-3"
-                  src={product.image}
+                  src={product.imagem ? `data:image/png;base64,${product.imagem}` : ''}
                   alt="Card"
                   height={300}
                 />
                 <div className="card-body">
                   <h5 className="card-title">
-                    {product.title.substring(0, 12)}...
+                    {product.nome}...
                   </h5>
                   <p className="card-text">
-                    {product.description.substring(0, 90)}...
+                    {product.descricao}...
                   </p>
                 </div>
                 <ul className="list-group list-group-flush">
-                  <li className="list-group-item lead">$ {product.price}</li>
+                  <li className="list-group-item lead">$ {product.preco}</li>
                   {/* <li className="list-group-item">Dapibus ac facilisis in</li>
                     <li className="list-group-item">Vestibulum at eros</li> */}
                 </ul>
